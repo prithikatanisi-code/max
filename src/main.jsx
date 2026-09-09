@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { supabase } from "./supabase";
 import { createRoot } from "react-dom/client";
 import {
   BrowserRouter,
