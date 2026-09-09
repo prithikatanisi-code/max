@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { supabase } from "./supabase";
 import { createRoot } from "react-dom/client";
 import {
   BrowserRouter,
@@ -616,12 +617,56 @@ function Experience({
 ========================= */
 
 function Local() {
-
   const nav = useNavigate();
   const [selected, setSelected] = useState(null);
   const [search, setSearch] = useState("");
+  const [liveDestinations, setLiveDestinations] = useState(destinations);
+  const [loading, setLoading] = useState(true);
 
-  const filtered = destinations.filter(d =>
+  useEffect(() => {
+    async function loadDestinations() {
+      if (!supabase) {
+        setLoading(false);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("destinations")
+        .select("*")
+        .order("name");
+
+      if (error) {
+        console.error("VOYAGE destinations error:", error);
+        setLoading(false);
+        return;
+      }
+
+      if (data && data.length > 0) {
+        const formatted = data.map((item) => ({
+          id: item.id,
+          name: item.name,
+          place: item.location || item.city || "India",
+          crowd: Number(item.crowd || item.crowd_percentage || 0),
+          rating: Number(item.rating || 4.5),
+          cost: Number(item.entry_fee || item.cost || 0),
+          time: item.status || "Open",
+          img: item.image_url || item.img || destinations[0].img,
+          type: item.type || item.category || "Experience",
+          description:
+            item.description ||
+            "Discover this destination with VOYAGE."
+        }));
+
+        setLiveDestinations(formatted);
+      }
+
+      setLoading(false);
+    }
+
+    loadDestinations();
+  }, []);
+
+  const filtered = liveDestinations.filter((d) =>
     `${d.name} ${d.place} ${d.type}`
       .toLowerCase()
       .includes(search.toLowerCase())
@@ -629,57 +674,42 @@ function Local() {
 
   return (
     <Layout>
-
       <div className="pagehead">
-
         <div>
+          <p className="eyebrow">DISCOVER NEAR YOU</p>
 
-          <p className="eyebrow">
-            DISCOVER NEAR YOU
-          </p>
-
-          <h1>
-            Explore smarter.
-          </h1>
+          <h1>Explore smarter.</h1>
 
           <p>
             Find places worth visiting without following
             everyone else.
           </p>
-
         </div>
 
         <div className="search">
           <Search />
+
           <input
             value={search}
-            onChange={e => setSearch(e.target.value)}
+            onChange={(e) => setSearch(e.target.value)}
             placeholder="Search destinations, food, stays..."
           />
         </div>
-
       </div>
 
       <div className="locationbar">
-
         <MapPin />
 
         <b>Hyderabad, Telangana</b>
 
-        <span>
-          • Smart location active
-        </span>
-
+        <span>• Smart location active</span>
       </div>
 
       <section className="content-grid">
-
         <div className="map">
-
           <div className="mapgrid">
-
             <div className="maplabel">
-              BEYOND LIVE MAP
+              VOYAGE LIVE MAP
             </div>
 
             <div className="map-center">
@@ -687,7 +717,7 @@ function Local() {
               YOU
             </div>
 
-            {destinations
+            {liveDestinations
               .slice(0, 5)
               .map((d, i) => (
                 <button
@@ -698,7 +728,6 @@ function Local() {
                   {d.crowd}%
                 </button>
               ))}
-
           </div>
 
           <div className="maplegend">
@@ -711,23 +740,24 @@ function Local() {
             <i className="red-dot" />
             High
           </div>
-
         </div>
 
         <div className="cards">
-
           <div className="cards-heading">
             <div>
               <h2>Recommended for you</h2>
+
               <span>
-                Based on crowd + experience
+                {loading
+                  ? "Loading live destinations..."
+                  : "Based on crowd + experience"}
               </span>
             </div>
 
             <Sparkles size={22} />
           </div>
 
-          {filtered.slice(0, 5).map(d => (
+          {filtered.slice(0, 5).map((d) => (
             <DestinationCard
               key={d.id}
               d={d}
@@ -735,8 +765,12 @@ function Local() {
             />
           ))}
 
+          {!loading && filtered.length === 0 && (
+            <p className="muted">
+              No destinations found.
+            </p>
+          )}
         </div>
-
       </section>
 
       {selected && (
@@ -744,16 +778,12 @@ function Local() {
           d={selected}
           close={() => setSelected(null)}
           nav={nav}
+          allDestinations={liveDestinations}
         />
       )}
-
     </Layout>
   );
 }
-
-/* =========================
-   DESTINATION CARD
-========================= */
 
 function DestinationCard({ d, click }) {
 
@@ -815,9 +845,9 @@ function DestinationCard({ d, click }) {
    REDIRECTION MODAL
 ========================= */
 
-function RedirectModal({ d, close, nav }) {
+function RedirectModal({ d, close, nav, allDestinations }) {
 
-  const alternatives = destinations
+  const alternatives = allDestinations
     .filter(x => x.id !== d.id)
     .sort((a, b) => a.crowd - b.crowd);
 
