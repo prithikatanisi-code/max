@@ -1,68 +1,1614 @@
-import React,{useState} from "react";
-import {createRoot} from "react-dom/client";
-import {BrowserRouter,useNavigate,useLocation} from "react-router-dom";
-import {MapPin,Compass,Globe2,BarChart3,Route,Users,IndianRupee,Search,ChevronRight,Navigation,Star,ShieldCheck,Hotel,Utensils,Store,ArrowRight,TrendingUp,Menu,X} from "lucide-react";
-import {LineChart,Line,XAxis,YAxis,Tooltip,ResponsiveContainer,BarChart,Bar} from "recharts";
+import React, { useState } from "react";
+import { createRoot } from "react-dom/client";
+import {
+  BrowserRouter,
+  useNavigate,
+  useLocation
+} from "react-router-dom";
+
+import {
+  MapPin,
+  Compass,
+  Globe2,
+  BarChart3,
+  Route,
+  Users,
+  IndianRupee,
+  Search,
+  ChevronRight,
+  Navigation,
+  Star,
+  ShieldCheck,
+  Hotel,
+  Utensils,
+  Store,
+  ArrowRight,
+  TrendingUp,
+  Menu,
+  X,
+  Sparkles,
+  Clock,
+  Heart,
+  Zap,
+  Camera,
+  Map,
+  Mountain,
+  Coffee,
+  CalendarDays
+} from "lucide-react";
+
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  BarChart,
+  Bar
+} from "recharts";
+
 import "./styles.css";
 
-const destinations=[
- {id:"charminar",name:"Charminar",place:"Hyderabad",crowd:92,rating:4.6,cost:50,time:"Open",img:"https://images.unsplash.com/photo-1602774896930-6f0b4a4f6b9d?auto=format&fit=crop&w=900&q=80",type:"Heritage"},
- {id:"paigah",name:"Paigah Tombs",place:"Hyderabad",crowd:28,rating:4.7,cost:50,time:"Open",img:"https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=900&q=80",type:"Heritage"},
- {id:"golconda",name:"Golconda Fort",place:"Hyderabad",crowd:64,rating:4.7,cost:40,time:"Open",img:"https://images.unsplash.com/photo-1599661046289-e31897846e41?auto=format&fit=crop&w=900&q=80",type:"Heritage"},
- {id:"ananthagiri",name:"Ananthagiri Hills",place:"Telangana",crowd:22,rating:4.5,cost:100,time:"Open",img:"https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=900&q=80",type:"Nature"},
- {id:"hampi",name:"Hampi",place:"Karnataka",crowd:41,rating:4.8,cost:100,time:"Open",img:"https://images.unsplash.com/photo-1600100397608-f010b5c9c0d5?auto=format&fit=crop&w=900&q=80",type:"Heritage"},
- {id:"kerala",name:"Alleppey",place:"Kerala",crowd:35,rating:4.8,cost:300,type:"Nature",img:"https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&w=900&q=80"}
+/* =========================
+   DESTINATION DATA
+========================= */
+
+const destinations = [
+  {
+    id: "charminar",
+    name: "Charminar",
+    place: "Hyderabad",
+    crowd: 92,
+    rating: 4.6,
+    cost: 50,
+    time: "Open",
+    img: "https://images.unsplash.com/photo-1602774896930-6f0b4a4f6b9d?auto=format&fit=crop&w=1200&q=85",
+    type: "Heritage",
+    description:
+      "The iconic heart of Hyderabad surrounded by centuries of culture, food and architecture."
+  },
+  {
+    id: "paigah",
+    name: "Paigah Tombs",
+    place: "Hyderabad",
+    crowd: 28,
+    rating: 4.7,
+    cost: 50,
+    time: "Open",
+    img: "https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=1200&q=85",
+    type: "Hidden Gem",
+    description:
+      "A peaceful architectural masterpiece offering a quieter cultural experience."
+  },
+  {
+    id: "golconda",
+    name: "Golconda Fort",
+    place: "Hyderabad",
+    crowd: 64,
+    rating: 4.7,
+    cost: 40,
+    time: "Open",
+    img: "https://images.unsplash.com/photo-1599661046289-e31897846e41?auto=format&fit=crop&w=1200&q=85",
+    type: "Heritage",
+    description:
+      "Explore ancient walls, royal history and spectacular views over Hyderabad."
+  },
+  {
+    id: "ananthagiri",
+    name: "Ananthagiri Hills",
+    place: "Telangana",
+    crowd: 22,
+    rating: 4.5,
+    cost: 100,
+    time: "Open",
+    img: "https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1200&q=85",
+    type: "Nature",
+    description:
+      "Escape the city with forests, viewpoints and refreshing outdoor experiences."
+  },
+  {
+    id: "hampi",
+    name: "Hampi",
+    place: "Karnataka",
+    crowd: 41,
+    rating: 4.8,
+    cost: 100,
+    time: "Open",
+    img: "https://images.unsplash.com/photo-1600100397608-f010b5c9c0d5?auto=format&fit=crop&w=1200&q=85",
+    type: "Heritage",
+    description:
+      "Walk through one of India's most extraordinary historical landscapes."
+  },
+  {
+    id: "kerala",
+    name: "Alleppey",
+    place: "Kerala",
+    crowd: 35,
+    rating: 4.8,
+    cost: 300,
+    time: "Open",
+    img: "https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&w=1200&q=85",
+    type: "Nature",
+    description:
+      "Relax among Kerala's backwaters, houseboats and peaceful landscapes."
+  }
 ];
-const states=["Telangana","Andhra Pradesh","Karnataka","Kerala","Rajasthan","Goa","Maharashtra","Tamil Nadu","Himachal Pradesh","Uttarakhand","West Bengal","Gujarat"];
-const revenue=[{m:"Jan",v:62},{m:"Feb",v:70},{m:"Mar",v:66},{m:"Apr",v:79},{m:"May",v:74},{m:"Jun",v:88},{m:"Jul",v:96},{m:"Aug",v:108}];
 
-function Crowd({value}){return <span className={"crowd "+(value>70?"red":value>40?"yellow":"green")}>{value}% crowd</span>}
+const revenue = [
+  { m: "Jan", v: 62 },
+  { m: "Feb", v: 70 },
+  { m: "Mar", v: 66 },
+  { m: "Apr", v: 79 },
+  { m: "May", v: 74 },
+  { m: "Jun", v: 88 },
+  { m: "Jul", v: 96 },
+  { m: "Aug", v: 108 }
+];
 
-function Layout({children,board=false}){
- const nav=useNavigate(), loc=useLocation(); const [open,setOpen]=useState(false);
- const links=board?[["/board","Overview",BarChart3],["/board/crowd","Crowd Intelligence",Users],["/board/redirections","Redirections",Route],["/board/destinations","Destinations",Compass],["/board/businesses","Local Businesses",Store],["/board/revenue","Revenue",IndianRupee]]:[["/tourist","Home",Compass],["/tourist/local","Explore",MapPin],["/tourist/planner","AI Planner",Route],["/tourist/trips","My Trips",Hotel]];
- return <div className="app">
-  <header><div className="brand" onClick={()=>nav(board?"/board":"/tourist")}><div className="logo">B</div><div><b>BEYOND</b><small>INTELLIGENT TOURISM NETWORK</small></div></div>
-  <button className="mobile" onClick={()=>setOpen(!open)}>{open?<X/>:<Menu/>}</button>
-  <nav className={open?"show":""}>{links.map(([p,t,I])=><button key={p} className={loc.pathname===p?"active":""} onClick={()=>{nav(p);setOpen(false)}}><I size={17}/>{t}</button>)}</nav>
-  <button className="role" onClick={()=>nav(board?"/tourist":"/board")}>{board?"Tourist View":"Tourism Board"} <ArrowRight size={16}/></button>
-  </header>
-  <main>{children}</main>
- </div>
+/* =========================
+   CROWD COMPONENT
+========================= */
+
+function Crowd({ value }) {
+  const level =
+    value > 70 ? "High" : value > 40 ? "Moderate" : "Low";
+
+  return (
+    <span
+      className={
+        "crowd " +
+        (value > 70
+          ? "red"
+          : value > 40
+          ? "yellow"
+          : "green")
+      }
+    >
+      <span className="crowd-dot"></span>
+      {value}% {level}
+    </span>
+  );
 }
 
-function Home(){
- const nav=useNavigate();
- return <Layout><section className="hero"><div><p className="eyebrow">THE FUTURE OF SMART TRAVEL</p><h1>DON’T FOLLOW THE CROWD.<br/><span>DISCOVER WHAT’S BEYOND IT.</span></h1><p className="lead">An intelligent tourism network that detects overcrowding and redirects travellers toward extraordinary, less-crowded destinations.</p><div className="actions"><button className="primary" onClick={()=>nav("/tourist/local")}>Start Exploring <ArrowRight/></button><button className="secondary" onClick={()=>nav("/tourist/planner")}>Plan My Trip</button></div></div><div className="hero-card"><div className="pulse"></div><Navigation size={40}/><h3>Smart Redirection</h3><p>Charminar is busy right now.</p><div className="mini-route"><b>92%</b><ArrowRight/><b>28%</b></div><small>Charminar → Paigah Tombs</small></div></section>
- <section className="three"><Feature icon={MapPin} title="LOCAL" text="Discover hidden gems around you" go={()=>nav("/tourist/local")}/><Feature icon={Globe2} title="NATIONAL" text="Explore every corner of India" go={()=>nav("/tourist/local")}/><Feature icon={Globe2} title="INTERNATIONAL" text="Travel beyond the familiar" go={()=>nav("/tourist/local")}/></section>
- <section className="quote">“YOUR NEXT FAVOURITE DESTINATION MAY BE JUST 15 MINUTES AWAY.”</section>
- </Layout>
+/* =========================
+   MAIN LAYOUT
+========================= */
+
+function Layout({ children, board = false }) {
+  const nav = useNavigate();
+  const loc = useLocation();
+  const [open, setOpen] = useState(false);
+
+  const links = board
+    ? [
+        ["/board", "Overview", BarChart3],
+        ["/board/crowd", "Crowd Intelligence", Users],
+        ["/board/redirections", "Redirections", Route],
+        ["/board/destinations", "Destinations", Compass],
+        ["/board/businesses", "Local Businesses", Store],
+        ["/board/revenue", "Revenue", IndianRupee]
+      ]
+    : [
+        ["/tourist", "Home", Compass],
+        ["/tourist/local", "Explore", MapPin],
+        ["/tourist/planner", "AI Planner", Sparkles],
+        ["/tourist/trips", "My Trips", Hotel]
+      ];
+
+  return (
+    <div className="app">
+
+      <header className="header">
+
+        <div
+          className="brand"
+          onClick={() => nav(board ? "/board" : "/tourist")}
+        >
+          <div className="logo">B</div>
+
+          <div>
+            <b>BEYOND</b>
+            <small>INTELLIGENT TOURISM NETWORK</small>
+          </div>
+        </div>
+
+        <button
+          className="mobile"
+          onClick={() => setOpen(!open)}
+        >
+          {open ? <X /> : <Menu />}
+        </button>
+
+        <nav className={open ? "show" : ""}>
+          {links.map(([path, title, Icon]) => (
+            <button
+              key={path}
+              className={
+                loc.pathname === path ? "active" : ""
+              }
+              onClick={() => {
+                nav(path);
+                setOpen(false);
+              }}
+            >
+              <Icon size={17} />
+              {title}
+            </button>
+          ))}
+        </nav>
+
+        <button
+          className="role"
+          onClick={() =>
+            nav(board ? "/tourist" : "/board")
+          }
+        >
+          {board ? "Tourist View" : "Tourism Board"}
+          <ArrowRight size={16} />
+        </button>
+
+      </header>
+
+      <main>{children}</main>
+
+    </div>
+  );
 }
-function Feature({icon:Icon,title,text,go}){return <div className="feature" onClick={go}><Icon/><h2>{title}</h2><p>{text}</p><ChevronRight/></div>}
 
-function Local(){
- const nav=useNavigate(); const [selected,setSelected]=useState(null);
- return <Layout><div className="pagehead"><div><p className="eyebrow">DISCOVER NEAR YOU</p><h1>Explore Local</h1><p>Smart recommendations based on location, crowd and your interests.</p></div><div className="search"><Search/><input placeholder="Search destinations, food, stays..."/></div></div>
- <div className="locationbar"><MapPin/> Hyderabad, Telangana <span>• GPS ready</span></div>
- <section className="content-grid"><div className="map"><div className="mapgrid"><div className="maplabel">LIVE DEMO MAP</div>{destinations.slice(0,5).map((d,i)=><button key={d.id} className={"marker m"+i} onClick={()=>setSelected(d)}>{d.crowd}%</button>)}</div><div className="maplegend"><i className="green-dot"/> Low <i className="yellow-dot"/> Moderate <i className="red-dot"/> High</div></div>
- <div className="cards"><h2>Recommended Nearby</h2>{destinations.slice(0,4).map(d=><DestinationCard key={d.id} d={d} click={()=>setSelected(d)}/>)}</div></section>
- {selected&&<RedirectModal d={selected} close={()=>setSelected(null)} nav={nav}/>}
- </Layout>
+/* =========================
+   HOME
+========================= */
+
+function Home() {
+  const nav = useNavigate();
+
+  return (
+    <Layout>
+
+      <section className="hero">
+
+        <div className="hero-content">
+
+          <div className="live-pill">
+            <span></span>
+            SMART TOURISM • LIVE INTELLIGENCE
+          </div>
+
+          <p className="eyebrow">
+            TRAVEL DIFFERENTLY
+          </p>
+
+          <h1>
+            DON'T FOLLOW
+            <br />
+            <span>THE CROWD.</span>
+          </h1>
+
+          <p className="hero-subtitle">
+            Discover extraordinary places before everyone
+            else does. BEYOND combines crowd intelligence,
+            local discovery and AI trip planning to create
+            smarter journeys.
+          </p>
+
+          <div className="actions">
+
+            <button
+              className="primary"
+              onClick={() => nav("/tourist/local")}
+            >
+              Explore smarter
+              <ArrowRight size={19} />
+            </button>
+
+            <button
+              className="secondary"
+              onClick={() => nav("/tourist/planner")}
+            >
+              <Sparkles size={17} />
+              Build my trip
+            </button>
+
+          </div>
+
+          <div className="hero-stats">
+
+            <div>
+              <strong>92%</strong>
+              <span>crowd detected</span>
+            </div>
+
+            <div>
+              <strong>28%</strong>
+              <span>less-crowded options</span>
+            </div>
+
+            <div>
+              <strong>15 min</strong>
+              <span>average redirection</span>
+            </div>
+
+          </div>
+
+        </div>
+
+        <div className="hero-visual">
+
+          <img
+            src={destinations[3].img}
+            alt="Hidden destination"
+          />
+
+          <div className="hero-overlay"></div>
+
+          <div className="floating-card top-card">
+            <div className="icon-circle">
+              <Navigation size={18} />
+            </div>
+
+            <div>
+              <b>Smart suggestion</b>
+              <span>12 min from you</span>
+            </div>
+          </div>
+
+          <div className="floating-card bottom-card">
+
+            <div className="mini-status">
+              <span></span>
+              LIVE
+            </div>
+
+            <b>Ananthagiri Hills</b>
+
+            <div className="card-row">
+              <Crowd value={22} />
+              <span>★ 4.5</span>
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+      <section className="trust-strip">
+
+        <div>
+          <ShieldCheck size={20} />
+          Verified destinations
+        </div>
+
+        <div>
+          <Zap size={20} />
+          Real-time intelligence
+        </div>
+
+        <div>
+          <MapPin size={20} />
+          Local experiences
+        </div>
+
+        <div>
+          <Sparkles size={20} />
+          AI-powered planning
+        </div>
+
+      </section>
+
+      <section className="discover-section">
+
+        <div className="section-heading">
+
+          <div>
+            <p className="eyebrow">DISCOVER DIFFERENT</p>
+
+            <h2>
+              What kind of experience
+              <br />
+              are you looking for?
+            </h2>
+          </div>
+
+          <button
+            className="text-button"
+            onClick={() => nav("/tourist/local")}
+          >
+            View all
+            <ArrowRight size={17} />
+          </button>
+
+        </div>
+
+        <div className="experience-grid">
+
+          <Experience
+            icon={Mountain}
+            title="Nature escapes"
+            text="Find peaceful places away from the rush."
+            image={destinations[3].img}
+            onClick={() => nav("/tourist/local")}
+          />
+
+          <Experience
+            icon={Camera}
+            title="Hidden heritage"
+            text="Experience history beyond the famous landmarks."
+            image={destinations[1].img}
+            onClick={() => nav("/tourist/local")}
+          />
+
+          <Experience
+            icon={Utensils}
+            title="Local flavours"
+            text="Discover food, markets and authentic experiences."
+            image={destinations[0].img}
+            onClick={() => nav("/tourist/local")}
+          />
+
+          <Experience
+            icon={Heart}
+            title="Slow travel"
+            text="Less rushing. More memorable moments."
+            image={destinations[5].img}
+            onClick={() => nav("/tourist/local")}
+          />
+
+        </div>
+
+      </section>
+
+      <section className="smart-section">
+
+        <div className="smart-image">
+
+          <img
+            src={destinations[1].img}
+            alt="Paigah Tombs"
+          />
+
+          <div className="smart-badge">
+            <Sparkles size={18} />
+            AI RECOMMENDED
+          </div>
+
+        </div>
+
+        <div className="smart-content">
+
+          <p className="eyebrow">
+            THE BEYOND DIFFERENCE
+          </p>
+
+          <h2>
+            Your destination
+            <br />
+            should adapt to you.
+          </h2>
+
+          <p>
+            Instead of simply showing you the most popular
+            places, BEYOND understands crowd levels, travel
+            time, cost, ratings and local opportunities to
+            recommend the experience that fits you best.
+          </p>
+
+          <div className="smart-points">
+
+            <div>
+              <div className="point-icon">
+                <Users />
+              </div>
+
+              <div>
+                <b>Beat the crowds</b>
+                <span>
+                  Find quieter alternatives in real time.
+                </span>
+              </div>
+            </div>
+
+            <div>
+              <div className="point-icon">
+                <Store />
+              </div>
+
+              <div>
+                <b>Support local</b>
+                <span>
+                  Discover businesses beyond tourist hotspots.
+                </span>
+              </div>
+            </div>
+
+            <div>
+              <div className="point-icon">
+                <Route />
+              </div>
+
+              <div>
+                <b>Travel smarter</b>
+                <span>
+                  Build efficient routes around your interests.
+                </span>
+              </div>
+            </div>
+
+          </div>
+
+          <button
+            className="primary"
+            onClick={() => nav("/tourist/planner")}
+          >
+            Try AI Planner
+            <Sparkles size={18} />
+          </button>
+
+        </div>
+
+      </section>
+
+      <section className="quote-section">
+
+        <div className="quote-mark">“</div>
+
+        <h2>
+          YOUR NEXT FAVOURITE
+          <br />
+          DESTINATION MAY BE
+          <br />
+          JUST 15 MINUTES AWAY.
+        </h2>
+
+        <span>
+          BEYOND • INTELLIGENT TOURISM NETWORK
+        </span>
+
+      </section>
+
+    </Layout>
+  );
 }
-function DestinationCard({d,click}){return <div className="dest" onClick={click}><img src={d.img}/><div className="destbody"><div className="row"><h3>{d.name}</h3><Crowd value={d.crowd}/></div><p>{d.place} • {d.type}</p><div className="meta"><span><Star size={15}/> {d.rating}</span><span>₹{d.cost}</span><span>12 min</span></div><span className="verified"><ShieldCheck size={14}/> Government verified</span></div></div>}
 
-function RedirectModal({d,close,nav}){const alt=d.id==="charminar"?destinations[1]:destinations[0]; return <div className="overlay"><div className="modal"><button className="close" onClick={close}>×</button><p className="eyebrow">SMART REDIRECTION</p><h2>LESS CROWD. MORE EXPERIENCE.</h2><div className="compare"><div><img src={d.img}/><b>{d.name}</b><Crowd value={d.crowd}/></div><div className="arrowbig"><ArrowRight/></div><div><img src={alt.img}/><b>{alt.name}</b><Crowd value={alt.crowd}/></div></div><div className="saving"><strong>{Math.max(0,d.crowd-alt.crowd)}% LESS CROWD</strong><span>18 min • ₹50 • 4.7 ★</span></div><p className="muted">A similar cultural experience with fewer people and more local businesses nearby.</p><div className="actions"><button className="primary" onClick={()=>{close();nav("/tourist/destination/"+alt.id)}}>EXPLORE THIS INSTEAD</button><button className="secondary" onClick={close}>KEEP MY ORIGINAL PLAN</button></div></div></div>}
+/* =========================
+   EXPERIENCE CARD
+========================= */
 
-function Planner(){const [days,setDays]=useState(3); const [done,setDone]=useState(false);return <Layout><div className="planner"><p className="eyebrow">DEMO AI PLANNER</p><h1>Build your perfect trip.</h1><p>Tell BEYOND what you want. Get a smart, crowd-aware itinerary.</p><div className="plannerbox"><label>Destination<input defaultValue="Hyderabad, India"/></label><label>Days<select value={days} onChange={e=>setDays(e.target.value)}><option>2</option><option>3</option><option>5</option><option>7</option></select></label><label>Budget<input defaultValue="₹10,000"/></label><label>Trip type<select><option>Heritage</option><option>Family</option><option>Nature</option><option>Food</option></select></label><button className="primary" onClick={()=>setDone(true)}>Generate itinerary <ArrowRight/></button></div>{done&&<div className="itinerary"><h2>Your {days}-day smart itinerary</h2>{["Charminar & Old City","Paigah Tombs + local cuisine","Golconda Fort & sunset"].slice(0,days).map((x,i)=><div className="day" key={x}><b>DAY {i+1}</b><div><h3>{x}</h3><p>09:00 Explore • 13:00 Local lunch • 16:00 Hidden gem • 19:00 Experience</p><Crowd value={i===0?92:28}/></div></div>)}</div>}</div></Layout>}
+function Experience({
+  icon: Icon,
+  title,
+  text,
+  image,
+  onClick
+}) {
+  return (
+    <div
+      className="experience-card"
+      onClick={onClick}
+    >
 
-function Destination({id}){const d=destinations.find(x=>x.id===id)||destinations[0];return <Layout><div className="detailhero"><img src={d.img}/><div><p className="eyebrow">{d.type} • {d.place}</p><h1>{d.name}</h1><p>★ {d.rating} • Government verified • {d.time}</p><Crowd value={d.crowd}/><div className="actions"><button className="primary">Plan this destination</button><button className="secondary">Find less crowded alternative</button></div></div></div><section className="detailgrid"><div><h2>Why visit?</h2><p>Experience a memorable destination with heritage, culture and local experiences. BEYOND combines crowd intelligence, travel time, cost and ratings to help you make a smarter choice.</p></div><div className="statbox"><b>Best time</b><span>08:00 – 11:00</span><b>Entry</b><span>₹{d.cost}</span><b>Nearby businesses</b><span>17 local partners</span></div></section></Layout>}
+      <img src={image} alt={title} />
 
-function Board(){
- return <Layout board><div className="boardhead"><div><p className="eyebrow">TOURISM BOARD COMMAND CENTER</p><h1>India Tourism Intelligence</h1><p>Real-time strategic view of destinations, crowds and local economic impact.</p></div><span className="demo">DEMO DATA</span></div><div className="kpis"><K title="TOTAL TOURISTS" val="12.8M" up="18.4%" icon={Users}/><K title="TOURISM REVENUE" val="₹842 Cr" up="14.7%" icon={IndianRupee}/><K title="LOCAL BUSINESS REVENUE" val="₹128 Cr" up="22.8%" icon={Store}/><K title="SMART REDIRECTIONS" val="1.84M" up="31.5%" icon={Route}/></div><section className="dashboardgrid"><div className="panel chart"><div className="paneltitle"><h2>Tourism Revenue</h2><span>Monthly • Demo</span></div><ResponsiveContainer width="100%" height={280}><LineChart data={revenue}><XAxis dataKey="m"/><YAxis/><Tooltip/><Line type="monotone" dataKey="v" strokeWidth={3}/></LineChart></ResponsiveContainer></div><div className="panel"><div className="paneltitle"><h2>Crowd Intelligence</h2><span>LIVE DEMO</span></div><div className="crowdmap">{destinations.slice(0,5).map(d=><div className="crowdrow" key={d.id}><span>{d.name}</span><Crowd value={d.crowd}/><b>{d.crowd>70?"High alert":d.crowd>40?"Monitor":"Opportunity"}</b></div>)}</div></div></section><section className="impact"><div><p className="eyebrow">SIGNATURE METRIC</p><h2>Redirecting tourists creates local economic growth.</h2><p>Tourist → AI recommendation → hidden destination → local stay → restaurant → shopping → local revenue → economic growth.</p></div><div className="flow">{["Tourist","AI","Hidden Gem","Local Stay","Local Spend","Growth"].map((x,i)=><React.Fragment key={x}><span>{x}</span>{i<5&&<ArrowRight size={18}/>}</React.Fragment>)}</div></section></Layout>
+      <div className="experience-overlay"></div>
+
+      <div className="experience-content">
+
+        <Icon size={25} />
+
+        <h3>{title}</h3>
+
+        <p>{text}</p>
+
+        <span>
+          Explore
+          <ArrowRight size={16} />
+        </span>
+
+      </div>
+
+    </div>
+  );
 }
-function K({title,val,up,icon:Icon}){return <div className="kpi"><Icon/><small>{title}</small><strong>{val}</strong><span><TrendingUp size={14}/> {up}</span></div>}
 
-function BoardPage({type}){return <Layout board><div className="boardhead"><div><p className="eyebrow">ANALYTICS MODULE</p><h1>{type}</h1><p>Strategic tourism intelligence • DEMO DATA</p></div></div><div className="kpis"><K title="VISITORS" val="4.82M" up="12.2%" icon={Users}/><K title="REVENUE" val="₹214 Cr" up="16.4%" icon={IndianRupee}/><K title="LOCAL SPEND" val="₹48 Cr" up="21.1%" icon={Store}/><K title="SATISFACTION" val="4.7/5" up="8.2%" icon={Star}/></div><div className="panel bigpanel"><h2>Performance overview</h2><ResponsiveContainer width="100%" height={340}><BarChart data={revenue}><XAxis dataKey="m"/><YAxis/><Tooltip/><Bar dataKey="v"/></BarChart></ResponsiveContainer></div></Layout>}
+/* =========================
+   LOCAL EXPLORE
+========================= */
 
-function App(){const p=window.location.pathname;if(p==="/")return <Home/>;if(p==="/tourist"||p==="/tourist/")return <Home/>;if(p==="/tourist/local")return <Local/>;if(p==="/tourist/planner")return <Planner/>;if(p.startsWith("/tourist/destination/"))return <Destination id={p.split("/").pop()}/>;if(p.startsWith("/board")){if(p==="/board")return <Board/>;return <BoardPage type={p.split("/")[2]?.replace("-"," ").toUpperCase()||"ANALYTICS"}/>};return <Home/>}
-createRoot(document.getElementById("root")).render(<BrowserRouter><App/></BrowserRouter>);
+function Local() {
+
+  const nav = useNavigate();
+  const [selected, setSelected] = useState(null);
+  const [search, setSearch] = useState("");
+
+  const filtered = destinations.filter(d =>
+    `${d.name} ${d.place} ${d.type}`
+      .toLowerCase()
+      .includes(search.toLowerCase())
+  );
+
+  return (
+    <Layout>
+
+      <div className="pagehead">
+
+        <div>
+
+          <p className="eyebrow">
+            DISCOVER NEAR YOU
+          </p>
+
+          <h1>
+            Explore smarter.
+          </h1>
+
+          <p>
+            Find places worth visiting without following
+            everyone else.
+          </p>
+
+        </div>
+
+        <div className="search">
+          <Search />
+          <input
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder="Search destinations, food, stays..."
+          />
+        </div>
+
+      </div>
+
+      <div className="locationbar">
+
+        <MapPin />
+
+        <b>Hyderabad, Telangana</b>
+
+        <span>
+          • Smart location active
+        </span>
+
+      </div>
+
+      <section className="content-grid">
+
+        <div className="map">
+
+          <div className="mapgrid">
+
+            <div className="maplabel">
+              BEYOND LIVE MAP
+            </div>
+
+            <div className="map-center">
+              <MapPin size={22} />
+              YOU
+            </div>
+
+            {destinations
+              .slice(0, 5)
+              .map((d, i) => (
+                <button
+                  key={d.id}
+                  className={"marker m" + i}
+                  onClick={() => setSelected(d)}
+                >
+                  {d.crowd}%
+                </button>
+              ))}
+
+          </div>
+
+          <div className="maplegend">
+            <i className="green-dot" />
+            Low
+
+            <i className="yellow-dot" />
+            Moderate
+
+            <i className="red-dot" />
+            High
+          </div>
+
+        </div>
+
+        <div className="cards">
+
+          <div className="cards-heading">
+            <div>
+              <h2>Recommended for you</h2>
+              <span>
+                Based on crowd + experience
+              </span>
+            </div>
+
+            <Sparkles size={22} />
+          </div>
+
+          {filtered.slice(0, 5).map(d => (
+            <DestinationCard
+              key={d.id}
+              d={d}
+              click={() => setSelected(d)}
+            />
+          ))}
+
+        </div>
+
+      </section>
+
+      {selected && (
+        <RedirectModal
+          d={selected}
+          close={() => setSelected(null)}
+          nav={nav}
+        />
+      )}
+
+    </Layout>
+  );
+}
+
+/* =========================
+   DESTINATION CARD
+========================= */
+
+function DestinationCard({ d, click }) {
+
+  return (
+    <div
+      className="dest"
+      onClick={click}
+    >
+
+      <img src={d.img} alt={d.name} />
+
+      <div className="destbody">
+
+        <div className="row">
+
+          <h3>{d.name}</h3>
+
+          <Crowd value={d.crowd} />
+
+        </div>
+
+        <p>
+          {d.place} • {d.type}
+        </p>
+
+        <div className="meta">
+
+          <span>
+            <Star size={15} />
+            {d.rating}
+          </span>
+
+          <span>
+            <IndianRupee size={14} />
+            {d.cost}
+          </span>
+
+          <span>
+            <Clock size={14} />
+            12 min
+          </span>
+
+        </div>
+
+        <span className="verified">
+          <ShieldCheck size={14} />
+          Verified destination
+        </span>
+
+      </div>
+
+      <ChevronRight className="dest-arrow" size={20} />
+
+    </div>
+  );
+}
+
+/* =========================
+   REDIRECTION MODAL
+========================= */
+
+function RedirectModal({ d, close, nav }) {
+
+  const alternatives = destinations
+    .filter(x => x.id !== d.id)
+    .sort((a, b) => a.crowd - b.crowd);
+
+  const alt = alternatives[0];
+
+  const saving = Math.max(
+    0,
+    d.crowd - alt.crowd
+  );
+
+  return (
+    <div className="overlay">
+
+      <div className="modal">
+
+        <button
+          className="close"
+          onClick={close}
+        >
+          ×
+        </button>
+
+        <div className="modal-ai">
+          <Sparkles size={17} />
+          BEYOND SMART REDIRECTION
+        </div>
+
+        <h2>
+          We found a better
+          <br />
+          experience for you.
+        </h2>
+
+        <p className="modal-sub">
+          The destination you're viewing is busy.
+          Here's a quieter option with a similar
+          experience.
+        </p>
+
+        <div className="compare">
+
+          <div>
+
+            <img src={d.img} alt={d.name} />
+
+            <b>{d.name}</b>
+
+            <Crowd value={d.crowd} />
+
+          </div>
+
+          <div className="arrowbig">
+            <ArrowRight />
+          </div>
+
+          <div>
+
+            <img src={alt.img} alt={alt.name} />
+
+            <b>{alt.name}</b>
+
+            <Crowd value={alt.crowd} />
+
+          </div>
+
+        </div>
+
+        <div className="saving">
+
+          <strong>
+            {saving}% LESS CROWD
+          </strong>
+
+          <span>
+            Similar experience • 18 min • ₹50
+          </span>
+
+        </div>
+
+        <p className="muted">
+          A smarter alternative with fewer people,
+          local experiences and a better chance to
+          enjoy the destination at your own pace.
+        </p>
+
+        <div className="actions">
+
+          <button
+            className="primary"
+            onClick={() => {
+              close();
+              nav(
+                "/tourist/destination/" +
+                alt.id
+              );
+            }}
+          >
+            Explore this instead
+            <ArrowRight size={17} />
+          </button>
+
+          <button
+            className="secondary"
+            onClick={close}
+          >
+            Keep my original plan
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+  );
+}
+
+/* =========================
+   AI PLANNER
+========================= */
+
+function Planner() {
+
+  const [days, setDays] = useState(3);
+  const [done, setDone] = useState(false);
+
+  const itinerary = [
+    "Charminar & Old City",
+    "Paigah Tombs + local cuisine",
+    "Golconda Fort & sunset",
+    "Ananthagiri Hills escape",
+    "Local markets & hidden cafés",
+    "Heritage walk + cultural experience",
+    "Relaxed final day"
+  ];
+
+  return (
+    <Layout>
+
+      <div className="planner">
+
+        <div className="planner-intro">
+
+          <div className="ai-orb">
+            <Sparkles />
+          </div>
+
+          <p className="eyebrow">
+            BEYOND AI PLANNER
+          </p>
+
+          <h1>
+            Don't plan a trip.
+            <br />
+            <span>Design an experience.</span>
+          </h1>
+
+          <p>
+            Tell us where you're going, what you love
+            and how much you want to spend. BEYOND
+            creates a crowd-aware journey around you.
+          </p>
+
+        </div>
+
+        <div className="plannerbox">
+
+          <label>
+            <span>Destination</span>
+            <input defaultValue="Hyderabad, India" />
+          </label>
+
+          <label>
+            <span>Days</span>
+
+            <select
+              value={days}
+              onChange={e =>
+                setDays(Number(e.target.value))
+              }
+            >
+              <option value={2}>2 days</option>
+              <option value={3}>3 days</option>
+              <option value={5}>5 days</option>
+              <option value={7}>7 days</option>
+            </select>
+          </label>
+
+          <label>
+            <span>Budget</span>
+            <input defaultValue="₹10,000" />
+          </label>
+
+          <label>
+            <span>Experience</span>
+
+            <select>
+              <option>Heritage</option>
+              <option>Nature</option>
+              <option>Food</option>
+              <option>Family</option>
+              <option>Adventure</option>
+            </select>
+          </label>
+
+          <button
+            className="primary generate"
+            onClick={() => setDone(true)}
+          >
+            <Sparkles size={18} />
+            Generate my journey
+          </button>
+
+        </div>
+
+        {done && (
+
+          <div className="itinerary">
+
+            <div className="itinerary-head">
+
+              <div>
+                <p className="eyebrow">
+                  AI GENERATED
+                </p>
+
+                <h2>
+                  Your {days}-day smart itinerary
+                </h2>
+              </div>
+
+              <div className="ai-score">
+                <Sparkles size={16} />
+                94% optimized
+              </div>
+
+            </div>
+
+            {itinerary
+              .slice(0, days)
+              .map((item, i) => (
+
+                <div
+                  className="day"
+                  key={item}
+                >
+
+                  <div className="day-number">
+                    {String(i + 1).padStart(2, "0")}
+                  </div>
+
+                  <div className="day-content">
+
+                    <span>
+                      DAY {i + 1}
+                    </span>
+
+                    <h3>{item}</h3>
+
+                    <p>
+                      09:00 Explore • 13:00 Local
+                      lunch • 16:00 Hidden gem •
+                      19:00 Experience
+                    </p>
+
+                  </div>
+
+                  <Crowd
+                    value={i === 0 ? 42 : 28}
+                  />
+
+                </div>
+
+              ))}
+
+          </div>
+
+        )}
+
+      </div>
+
+    </Layout>
+  );
+}
+
+/* =========================
+   DESTINATION DETAIL
+========================= */
+
+function Destination({ id }) {
+
+  const nav = useNavigate();
+
+  const d =
+    destinations.find(x => x.id === id) ||
+    destinations[0];
+
+  const alternative =
+    destinations
+      .filter(x => x.id !== d.id)
+      .sort((a, b) => a.crowd - b.crowd)[0];
+
+  return (
+    <Layout>
+
+      <div className="detailhero">
+
+        <img
+          src={d.img}
+          alt={d.name}
+        />
+
+        <div className="detail-content">
+
+          <p className="eyebrow">
+            {d.type} • {d.place}
+          </p>
+
+          <h1>{d.name}</h1>
+
+          <div className="detail-rating">
+            ★ {d.rating}
+            <span>Verified destination</span>
+            <span>{d.time}</span>
+          </div>
+
+          <Crowd value={d.crowd} />
+
+          <p className="detail-description">
+            {d.description}
+          </p>
+
+          <div className="actions">
+
+            <button className="primary">
+              <CalendarDays size={17} />
+              Plan this destination
+            </button>
+
+            <button
+              className="secondary"
+              onClick={() =>
+                nav(
+                  "/tourist/destination/" +
+                  alternative.id
+                )
+              }
+            >
+              <Route size={17} />
+              Find quieter option
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <section className="detailgrid">
+
+        <div>
+
+          <p className="eyebrow">
+            WHY VISIT
+          </p>
+
+          <h2>
+            More than a place.
+            <br />
+            It's an experience.
+          </h2>
+
+          <p>
+            BEYOND combines crowd intelligence,
+            travel time, cost, ratings and nearby
+            businesses to help you make a smarter
+            decision about where to go.
+          </p>
+
+        </div>
+
+        <div className="statbox">
+
+          <div>
+            <Clock />
+            <b>Best time</b>
+            <span>08:00 – 11:00</span>
+          </div>
+
+          <div>
+            <IndianRupee />
+            <b>Entry</b>
+            <span>₹{d.cost}</span>
+          </div>
+
+          <div>
+            <Store />
+            <b>Nearby businesses</b>
+            <span>17 local partners</span>
+          </div>
+
+        </div>
+
+      </section>
+
+    </Layout>
+  );
+}
+
+/* =========================
+   TOURISM BOARD
+========================= */
+
+function Board() {
+
+  return (
+    <Layout board>
+
+      <div className="boardhead">
+
+        <div>
+
+          <p className="eyebrow">
+            TOURISM BOARD COMMAND CENTER
+          </p>
+
+          <h1>
+            India Tourism Intelligence
+          </h1>
+
+          <p>
+            Understand visitor movement, crowd
+            pressure and local economic impact.
+          </p>
+
+        </div>
+
+        <span className="demo">
+          LIVE INTELLIGENCE
+        </span>
+
+      </div>
+
+      <div className="kpis">
+
+        <K
+          title="TOTAL TOURISTS"
+          val="12.8M"
+          up="18.4%"
+          icon={Users}
+        />
+
+        <K
+          title="TOURISM REVENUE"
+          val="₹842 Cr"
+          up="14.7%"
+          icon={IndianRupee}
+        />
+
+        <K
+          title="LOCAL BUSINESS REVENUE"
+          val="₹128 Cr"
+          up="22.8%"
+          icon={Store}
+        />
+
+        <K
+          title="SMART REDIRECTIONS"
+          val="1.84M"
+          up="31.5%"
+          icon={Route}
+        />
+
+      </div>
+
+      <section className="dashboardgrid">
+
+        <div className="panel chart">
+
+          <div className="paneltitle">
+
+            <div>
+              <h2>Tourism Revenue</h2>
+              <span>
+                Monthly performance
+              </span>
+            </div>
+
+            <TrendingUp />
+
+          </div>
+
+          <ResponsiveContainer
+            width="100%"
+            height={280}
+          >
+            <LineChart data={revenue}>
+              <XAxis dataKey="m" />
+              <YAxis />
+              <Tooltip />
+              <Line
+                type="monotone"
+                dataKey="v"
+                strokeWidth={3}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+
+        </div>
+
+        <div className="panel">
+
+          <div className="paneltitle">
+
+            <div>
+              <h2>Crowd Intelligence</h2>
+              <span>
+                Destination pressure
+              </span>
+            </div>
+
+            <Users />
+
+          </div>
+
+          <div className="crowdmap">
+
+            {destinations
+              .slice(0, 5)
+              .map(d => (
+
+                <div
+                  className="crowdrow"
+                  key={d.id}
+                >
+
+                  <span>{d.name}</span>
+
+                  <Crowd value={d.crowd} />
+
+                  <b>
+                    {d.crowd > 70
+                      ? "High alert"
+                      : d.crowd > 40
+                      ? "Monitor"
+                      : "Opportunity"}
+                  </b>
+
+                </div>
+
+              ))}
+
+          </div>
+
+        </div>
+
+      </section>
+
+      <section className="impact">
+
+        <div>
+
+          <p className="eyebrow">
+            SIGNATURE METRIC
+          </p>
+
+          <h2>
+            Redirecting tourists
+            creates local economic growth.
+          </h2>
+
+          <p>
+            Tourist → AI recommendation →
+            hidden destination → local stay →
+            restaurant → shopping → local revenue
+            → economic growth.
+          </p>
+
+        </div>
+
+        <div className="flow">
+
+          {[
+            "Tourist",
+            "AI",
+            "Hidden Gem",
+            "Local Stay",
+            "Local Spend",
+            "Growth"
+          ].map((x, i) => (
+
+            <React.Fragment key={x}>
+
+              <span>{x}</span>
+
+              {i < 5 && (
+                <ArrowRight size={18} />
+              )}
+
+            </React.Fragment>
+
+          ))}
+
+        </div>
+
+      </section>
+
+    </Layout>
+  );
+}
+
+/* =========================
+   KPI
+========================= */
+
+function K({
+  title,
+  val,
+  up,
+  icon: Icon
+}) {
+
+  return (
+
+    <div className="kpi">
+
+      <Icon />
+
+      <small>{title}</small>
+
+      <strong>{val}</strong>
+
+      <span>
+        <TrendingUp size={14} />
+        {up}
+      </span>
+
+    </div>
+
+  );
+}
+
+/* =========================
+   BOARD INNER PAGES
+========================= */
+
+function BoardPage({ type }) {
+
+  return (
+
+    <Layout board>
+
+      <div className="boardhead">
+
+        <div>
+
+          <p className="eyebrow">
+            ANALYTICS MODULE
+          </p>
+
+          <h1>{type}</h1>
+
+          <p>
+            Strategic tourism intelligence
+          </p>
+
+        </div>
+
+      </div>
+
+      <div className="kpis">
+
+        <K
+          title="VISITORS"
+          val="4.82M"
+          up="12.2%"
+          icon={Users}
+        />
+
+        <K
+          title="REVENUE"
+          val="₹214 Cr"
+          up="16.4%"
+          icon={IndianRupee}
+        />
+
+        <K
+          title="LOCAL SPEND"
+          val="₹48 Cr"
+          up="21.1%"
+          icon={Store}
+        />
+
+        <K
+          title="SATISFACTION"
+          val="4.7/5"
+          up="8.2%"
+          icon={Star}
+        />
+
+      </div>
+
+      <div className="panel bigpanel">
+
+        <h2>
+          Performance overview
+        </h2>
+
+        <ResponsiveContainer
+          width="100%"
+          height={340}
+        >
+
+          <BarChart data={revenue}>
+
+            <XAxis dataKey="m" />
+
+            <YAxis />
+
+            <Tooltip />
+
+            <Bar dataKey="v" />
+
+          </BarChart>
+
+        </ResponsiveContainer>
+
+      </div>
+
+    </Layout>
+  );
+}
+
+/* =========================
+   APP ROUTER
+========================= */
+
+function App() {
+
+  const p = window.location.pathname;
+
+  if (p === "/")
+    return <Home />;
+
+  if (
+    p === "/tourist" ||
+    p === "/tourist/"
+  )
+    return <Home />;
+
+  if (p === "/tourist/local")
+    return <Local />;
+
+  if (p === "/tourist/planner")
+    return <Planner />;
+
+  if (
+    p.startsWith(
+      "/tourist/destination/"
+    )
+  )
+    return (
+      <Destination
+        id={p.split("/").pop()}
+      />
+    );
+
+  if (p.startsWith("/board")) {
+
+    if (p === "/board")
+      return <Board />;
+
+    return (
+      <BoardPage
+        type={
+          p
+            .split("/")[2]
+            ?.replaceAll("-", " ")
+            .toUpperCase() ||
+          "ANALYTICS"
+        }
+      />
+    );
+  }
+
+  return <Home />;
+}
+
+createRoot(
+  document.getElementById("root")
+).render(
+  <BrowserRouter>
+    <App />
+  </BrowserRouter>
+);
