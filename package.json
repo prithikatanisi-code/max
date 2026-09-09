@@ -13,7 +13,7 @@
     "react-router-dom":"latest",
     "lucide-react":"latest",
     "recharts":"latest",
-    "@supabase/supabase-js": "^2.57.0",
+    "@supabase/supabase-js": "^2.57.0"
   },
   "devDependencies": {}
 }
